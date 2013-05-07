@@ -8,4 +8,16 @@ public class Edge {
 		this.end = end;
 		this.weight = weight;
 	}
+	
+	public GraphNode getStartNode() {
+		return start;
+	}
+	
+	public GraphNode getEndNode() {
+		return end;
+	}
+	
+	public int getWeight() {
+		return weight;
+	}
 }

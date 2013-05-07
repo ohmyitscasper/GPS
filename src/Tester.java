@@ -31,8 +31,9 @@ public class Tester {
 		// TODO Auto-generated method stub
 		Scanner in = new Scanner(System.in);
 		String menuChoice;
-		String inputFile;
 		char choice;
+		GraphNode currentCity;
+		Graph graph = new Graph();
 		
 		for(;;) {
 			System.out.println(userMenu);
@@ -48,41 +49,56 @@ public class Tester {
 			
 			switch(choice) {
 			case 'a': {
-				if(IO.loadFile() < 0) {
+				/*Loading a text file into the system*/
+				
+				//The following line, IO.loadFile(graph) sends a reference of the graph object 
+				//to IO and that method fills the graph object in. If unsuccessful, it returns the original
+				//graph object which can either be null or have some older data.
+				if(IO.loadFile(graph)==null) {
 					System.out.println("\nPlease try again\n");
 					continue;
 				}
 			}
 				break;
 			case 'b':
-				
+				/* Loading a serialized file*/
 				break;
 			case 'c':
-				
+				/*Saving the current graph to a serialized file*/
 				break;
 			case 'd':
-				
+				/* Search for state and list all cities of that state*/
 				break;
 			case 'e':
-				
+				/* Search for city and display some information about it*/
 				break;
 			case 'f':
-				
+				/*Set City X as current city (X is between O-N cities)*/
 				break;
 			case 'g':
+				/*Print Current City*/
+				
+				for(Edge e:graph.getEdges()) {
+					System.out.println("Starting city ID: " + e.getStartNode().getID() + " Ending city ID: " + e.getEndNode().getID());
+				}
+				
+				
+				graph.checkAllEdgesExist();
 				
 				break;
 			case 'h':
-				
+				/*Find n closest cities closest to current city using GPS distances*/
 				break;
 			case 'i':
-				
+				/*Find all cities from current city with directed edge cost less than Y*/
 				break;
 			case 'j':
-				
+				/*Find shortest path between current city and some target city*/
 				break;
-			case 'k':
+			case 'k': {
+				System.out.println("Program Complete");
 				return;
+			}
 			default:
 				break;
 			}
