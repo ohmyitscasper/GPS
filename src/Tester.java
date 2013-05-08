@@ -32,7 +32,7 @@ public class Tester {
 		Scanner in = new Scanner(System.in);
 		String menuChoice;
 		char choice;
-		GraphNode currentCity;
+		GraphNode currentCity = null;
 		Graph graph = new Graph();
 		
 		for(;;) {
@@ -68,29 +68,48 @@ public class Tester {
 				break;
 			case 'd':
 				/* Search for state and list all cities of that state*/
+				IO.stateSearch(graph);
 				break;
 			case 'e':
 				/* Search for city and display some information about it*/
+				IO.citySearch(graph);
 				break;
 			case 'f':
 				/*Set City X as current city (X is between O-N cities)*/
+				//What happens right now is that when you go to set the current city but don't, even though one has already been set, 
+				//it says it doesn't exist. Figure out how to keep the state.
+				currentCity = IO.setCurrentCity(graph);
 				break;
 			case 'g':
 				/*Print Current City*/
-				
-				for(Edge e:graph.getEdges()) {
-					System.out.println("Starting city ID: " + e.getStartNode().getID() + " Ending city ID: " + e.getEndNode().getID());
+				if(currentCity==null) {
+					System.out.println("\nCurrent City doesn't exist");
+					continue;
 				}
+				IO.printCityInfo(currentCity);
 				
-				
-				graph.checkAllEdgesExist();
+//				//Currently just prints everything out and makes sure that everyone has a connection
+//				for(GraphNode e:graph.getVertices()) {
+//					System.out.println("City : " + e.getCity() + "\t\t\tState : " + e.getState());
+//				}
+//				graph.checkAllEdgesExist();
 				
 				break;
 			case 'h':
 				/*Find n closest cities closest to current city using GPS distances*/
+				if(currentCity==null) {
+					System.out.println("\nCurrent city doesn't exist. Please choose one first");
+					continue;
+				}
+				IO.nClosest(graph, currentCity);
 				break;
 			case 'i':
 				/*Find all cities from current city with directed edge cost less than Y*/
+				if(currentCity==null) {
+					currentCity = graph.setRandomCurrentCity();
+					System.out.println("\nNo current city set. Current city is now " + currentCity.getCity());
+				}
+				IO.yClosest(graph, currentCity);
 				break;
 			case 'j':
 				/*Find shortest path between current city and some target city*/

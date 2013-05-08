@@ -1,17 +1,23 @@
+import java.util.ArrayList;
+
 /**
  * This is my graph node class
  * 
  * @author Vanshil Shah vs2409
  *
  */
-public class GraphNode {
+public class GraphNode { //implements Comparator<GraphNode>{
 	private String city;
 	private String state;
 	private double latitude;
 	private double longitude;
 	private int ID;
-	private AdjacencyList<GraphNode> adjList;	//The list of outgoing connections
-	private AdjacencyList<GraphNode> incomingList;	//The list of incoming connections
+	private ArrayList<GraphNode> adjList;	//The list of outgoing connections
+	private ArrayList<GraphNode> incomingList;	//The list of incoming connections
+	private ArrayList<Edge> outgoingEdgeList;
+	private double distance;
+	private boolean known;
+	public GraphNode path;
 
 	public GraphNode(String city, String state, double latitude, double longitude, int ID) {
 		this.city = city;
@@ -19,16 +25,18 @@ public class GraphNode {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.ID = ID;
-		adjList = new AdjacencyList<GraphNode>();
-		incomingList = new AdjacencyList<GraphNode>();
+		adjList = new ArrayList<GraphNode>();
+		incomingList = new ArrayList<GraphNode>();
+		outgoingEdgeList = new ArrayList<Edge>();
 	}
 
-	public void addAdjacency(GraphNode endPt) {
-		adjList.insert(endPt);
+	public void addAdjacency(GraphNode endPt, Edge e) {
+		adjList.add(endPt);
+		outgoingEdgeList.add(e);
 	}
 	
 	public void addIncomingAdjacency(GraphNode beginPt) {
-		incomingList.insert(beginPt);
+		incomingList.add(beginPt);
 	}
 	
 	public String getCity() {
@@ -51,12 +59,33 @@ public class GraphNode {
 		return ID;
 	}
 	
-	public AdjacencyList<GraphNode> incomingConnections() {
+	public void setDistance(double distance) {
+		this.distance = distance;
+	}
+	
+	public double getDistance() {
+		return distance;
+	}
+	
+	public void setKnown(boolean known) {
+		this.known = known;
+	}
+	
+	public boolean getKnown() {
+		return known;
+	}
+	
+	public ArrayList<GraphNode> incomingConnections() {
 		return incomingList;
 	}
 	
-	public AdjacencyList<GraphNode> outgoingConnections() {
+	public ArrayList<GraphNode> outgoingConnections() {
 		return adjList;
 	}
 
-}
+//	@Override
+//	public int compare(GraphNode arg0, GraphNode arg1) {
+//		// TODO Auto-generated method stub
+//		return (int)(arg0.distance - arg1.distance);
+//	}	
+ }
