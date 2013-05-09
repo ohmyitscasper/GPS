@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -6,16 +7,21 @@ import java.util.ArrayList;
  * @author Vanshil Shah vs2409
  *
  */
-public class GraphNode { //implements Comparator<GraphNode>{
+public class GraphNode implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String city;
 	private String state;
 	private double latitude;
 	private double longitude;
 	private int ID;
-	private ArrayList<GraphNode> adjList;	//The list of outgoing connections
-	private ArrayList<GraphNode> incomingList;	//The list of incoming connections
-	private ArrayList<Edge> outgoingEdgeList;
+	private transient ArrayList<GraphNode> adjList;	//The list of outgoing connections
+	private transient ArrayList<GraphNode> incomingList;	//The list of incoming connections
+	private transient ArrayList<Edge> outgoingEdgeList;
 	private double distance;
+	private int cost;
 	private boolean known;
 	public GraphNode path;
 
@@ -67,6 +73,14 @@ public class GraphNode { //implements Comparator<GraphNode>{
 		return distance;
 	}
 	
+	public void setCost(int cost) {
+		this.cost = cost;
+	}
+	
+	public int getCost() {
+		return cost;
+	}
+	
 	public void setKnown(boolean known) {
 		this.known = known;
 	}
@@ -82,10 +96,8 @@ public class GraphNode { //implements Comparator<GraphNode>{
 	public ArrayList<GraphNode> outgoingConnections() {
 		return adjList;
 	}
-
-//	@Override
-//	public int compare(GraphNode arg0, GraphNode arg1) {
-//		// TODO Auto-generated method stub
-//		return (int)(arg0.distance - arg1.distance);
-//	}	
+	
+	public ArrayList<Edge> outgoingEdges() {
+		return outgoingEdgeList;
+	}	
  }

@@ -34,6 +34,7 @@ public class Tester {
 		char choice;
 		GraphNode currentCity = null;
 		Graph graph = new Graph();
+		String fileName = "mygraph.bin";
 		
 		for(;;) {
 			System.out.println(userMenu);
@@ -62,9 +63,15 @@ public class Tester {
 				break;
 			case 'b':
 				/* Loading a serialized file*/
+				graph = IO.read(fileName);
+				if(graph == null) {
+					System.out.println("Read Failed");
+					continue;
+				}
 				break;
 			case 'c':
 				/*Saving the current graph to a serialized file*/
+				IO.write(graph, fileName);
 				break;
 			case 'd':
 				/* Search for state and list all cities of that state*/
@@ -113,6 +120,11 @@ public class Tester {
 				break;
 			case 'j':
 				/*Find shortest path between current city and some target city*/
+				if(currentCity == null) {
+					currentCity = graph.setRandomCurrentCity();
+					System.out.println("\nNo current city set. Current city is now " + currentCity.getCity());
+				}
+				IO.shortestPath(graph, currentCity);
 				break;
 			case 'k': {
 				System.out.println("Program Complete");

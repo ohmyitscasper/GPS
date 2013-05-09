@@ -1,19 +1,26 @@
-public class Edge {
+import java.io.Serializable;
 
+public class Edge implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int weight;
-	GraphNode start, end;
+	//GraphNode start, end;
+	int start, end;
 
-	public Edge(GraphNode start, GraphNode end, int weight) {
+	public Edge(int start, int end, int weight) {
 		this.start = start;
 		this.end = end;
 		this.weight = weight;
 	}
 	
-	public GraphNode getStartNode() {
+	public int getStartNode() {
 		return start;
 	}
 	
-	public GraphNode getEndNode() {
+	public int getEndNode() {
 		return end;
 	}
 	

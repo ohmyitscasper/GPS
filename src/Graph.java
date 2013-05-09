@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -10,29 +11,24 @@ import java.util.Random;
  * @author Vanshil Shah vs2409
  *
  */
-public class Graph {
+public class Graph implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final int RANGE = (8-2)+1;
 	private final int RANDWEIGHT = (2000-100)+1;
 	private final int REALLYHIGHDISTANCE = 10000000;
 	private int totalNodes = 0;
-	private ArrayList<Edge> edges;
 	private ArrayList<GraphNode> vertices;
 	
 	public Graph() {
-		edges = new ArrayList<Edge>();
 		vertices = new ArrayList<GraphNode>();
 	}
 	public void addNode(GraphNode node) {
 		vertices.add(node);
 	}
-	
-	/**
-	 * Might be redundant
-	 * @param e
-	 */
-	public void addEdge(Edge e) {
-		edges.add(e);
-	}
+
 
 	public void updateTotalNodes(int total) {
 		totalNodes += total;
@@ -44,12 +40,18 @@ public class Graph {
 	
 	public void deleteAllData() {
 		vertices.clear();
-		edges.clear();
 		totalNodes = 0;
 	}
 	
+	/**
+	 * Traverse to each vertex and delete all of the edges.
+	 */
 	public void clearEdges() {
-		edges.clear();
+		for(GraphNode v:vertices) {
+			v.outgoingConnections().clear();
+			v.incomingConnections().clear();
+			v.outgoingEdges().clear();
+		}
 	}
 
 	public GraphNode getVertex(int idx) {
@@ -59,11 +61,6 @@ public class Graph {
 	public ArrayList<GraphNode> getVertices() {
 		return vertices;
 	}
-	
-	public Edge getEdge(int idx) {
-		return edges.get(idx);
-	}
-	
 	
 	/**
 	 * This method adds the random edges at the beginning of the program
@@ -100,8 +97,7 @@ public class Graph {
 					end = vertices.get(city);	
 				}
 				
-				Edge e = new Edge(v, end, weight);	//Create a new edge
-				addEdge(e);							//Add it to the list of edges
+				Edge e = new Edge(v.getID(), end.getID(), weight);	//Create a new edge
 				end.addIncomingAdjacency(v);		//Add the current vertex to the incoming connections of end
 				v.addAdjacency(end, e);				//Add the end vertex to the outgoing connections
 			}
@@ -120,8 +116,7 @@ public class Graph {
 			weight = r.nextInt(RANDWEIGHT) + 100; 	//Generate the random weight
 			
 			GraphNode begin = vertices.get(city);
-			Edge e = new Edge(begin, v, weight);
-			addEdge(e);
+			Edge e = new Edge(begin.getID(), v.getID(), weight);
 			begin.addAdjacency(v, e);
 			v.addIncomingAdjacency(begin);
 		}
@@ -224,43 +219,73 @@ public class Graph {
 	
 	public ArrayList<GraphNode> yClosest(GraphNode currentCity, double y) {
 		ArrayList<GraphNode> yClosest = new ArrayList<GraphNode>();
-		double tempDistance;
 		
-		//Figure out all of the distances from the current city to v
-		for(GraphNode v:vertices) {
-			//If we reach our currentCity, then set an arbitrary distance to itself
-			if(v==currentCity) {
-				currentCity.setDistance(REALLYHIGHDISTANCE);
-				continue;
-			}
-			
-			//Otherwise we calculate the distance between the current city and v
-			tempDistance = distance(currentCity, v);
-			v.setDistance(tempDistance);	//Set the distance in the GraphNode object
-		}
+		dijkstra(currentCity);	//To do this, we're just going to use dijkstras algo
+		
+		currentCity.setCost(REALLYHIGHDISTANCE);
 		
 		//Traverse through the list of vertices again and if
 		//the distance is less than y, put it in the array list.
 		for(GraphNode v:vertices) {
-			if(v.getDistance()<=y) {
+			if(v.getCost()<=y) {
 				yClosest.add(v);
 			}
 		}
 		return yClosest;
 	}
 	
+	/**
+	 * Dijkstra's algorithm implemented from the pseudocode in the book
+	 * @param currentCity
+	 */
 	public void dijkstra(GraphNode currentCity) {
+		
+		//Creating a comparator that can be used to compare costs from the current city
+		//to either arg0 or arg1
+		Comparator<GraphNode> c = new Comparator<GraphNode>() {
+			public int compare(GraphNode arg0, GraphNode arg1) {
+				// TODO Auto-generated method stub
+				return (int)(arg0.getCost() - arg1.getCost());
+			}	
+		};
+		
+		PriorityQueue<GraphNode> queue = new PriorityQueue<GraphNode>(totalNodes, c);
+		
+		
 		for(GraphNode v:vertices) {
-			v.setDistance(REALLYHIGHDISTANCE);
+			v.setCost(REALLYHIGHDISTANCE);
 			v.setKnown(false);
 		}
-		currentCity.setDistance(0);
-		currentCity.setKnown(true);
-		ArrayList<GraphNode> adjList = currentCity.outgoingConnections();
-		for(GraphNode temp: adjList) {
-			if(currentCity.getDistance()+temp.getDistance())
-			temp.setDistance(distance)
-		}
+		currentCity.setCost(0);
+	
+		GraphNode v = currentCity;
+		do {
+			v.setKnown(true);
+			ArrayList<GraphNode> adjList = v.outgoingConnections();
+			
+			//This for loop goes through each city adjacent to the current city and determines whether 
+			//the cost should be updated for each of these cities.
+			for(int a = 0; a<adjList.size(); a++) {
+				GraphNode temp = adjList.get(a);
+				
+				//If temp isn't marked as known already
+				if(!temp.getKnown()) {
+					
+					int cost = v.outgoingEdges().get(a).getWeight(); //This is the cost from the current vertex to the adj vertex.
+					
+					//Update the cost
+					if((v.getCost() + cost) < temp.getCost()) {
+						temp.setCost(v.getCost()+cost);
+						temp.path = v;
+						if(queue.contains(temp)) {
+							queue.remove(temp);
+						}
+						queue.add(temp);	//Add the city to the queue
+					}
+				}
+			}
+			v = queue.poll();
+		} while(!queue.isEmpty());	
 	}
 	
 	public double distance(GraphNode a, GraphNode b) {

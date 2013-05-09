@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 /**
@@ -13,10 +11,47 @@ import java.util.Scanner;
  *
  */
 public class IO implements Serializable{
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public static void write(Graph g, String fileName) {
+		try
+		{
+			FileOutputStream fileOut = new FileOutputStream(fileName);
+	        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	        out.writeObject(g);
+	        out.close();
+	        fileOut.close();
+	     }catch(IOException i)
+	     {
+	    	 System.out.println("Write error.");
+	    	 i.printStackTrace();
+	     }
+	}
+	
+	public static Graph read(String fileName) {
+		try {
+			Graph graph;
+			FileInputStream fileIn = new FileInputStream(fileName);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			graph = (Graph) in.readObject();
+			System.out.println("Graph g contains " + graph.getTotalNodes() + " total nodes");
+			for(GraphNode v: graph.getVertices()) {
+				System.out.println("City: " + v.getCity());
+			}
+			in.close();
+			fileIn.close();
+			return graph;
+		} catch(IOException i) {
+			System.out.println("Read error.");
+		} catch(ClassNotFoundException c) {
+			System.out.println("Class not found");
+		}
+		return null;
+	}
 
 	public static Graph loadFile(Graph g) {
 		Scanner fileReader, in;
@@ -235,9 +270,34 @@ public class IO implements Serializable{
 		} while(!numb);
 		
 		ArrayList<GraphNode> yClosest = g.yClosest(currentCity, y);
-		for(GraphNode v:yClosest) {
+		if(yClosest.isEmpty()) 
+			System.out.println("None within.");
+		for(GraphNode v:yClosest) 
 			printCityInfo(v);
+	}
+	
+	public static void shortestPath(Graph g, GraphNode currentCity) {
+		String cityInput;
+		Scanner in = new Scanner(System.in);
+		ArrayList<GraphNode> cities; 
+		
+		System.out.println("\nPlease enter the city that you would like to search for.");
+		cityInput = in.nextLine();
+		cities = g.searchCity(cityInput);
+		if(cities.size()==0) {
+			System.out.println("\nNo cities found with name " + cityInput + "\n");
+			return;
 		}
+		g.dijkstra(currentCity);
+		printPath(cities.get(0));	//Just print the path to the first city with this name
+	}
+	
+	public static void printPath(GraphNode city) {
+		if(city.path!=null) {
+			printPath(city.path);
+			System.out.println(" to ");
+		}
+		System.out.println(city.getCity());
 	}
 	
 	public static void printCityInfo(GraphNode v) {
@@ -246,5 +306,4 @@ public class IO implements Serializable{
 		System.out.println("Num of Incoming edges: " + v.incomingConnections().size() + 
 						   " Num of Outgoing edges: " + v.outgoingConnections().size() + "\n");
 	}
-	
 }
