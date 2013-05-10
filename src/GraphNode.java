@@ -20,10 +20,10 @@ public class GraphNode implements Serializable{
 	private transient ArrayList<GraphNode> adjList;	//The list of outgoing connections
 	private transient ArrayList<GraphNode> incomingList;	//The list of incoming connections
 	private transient ArrayList<Edge> outgoingEdgeList;
-	private double distance;
-	private int cost;
+	private double distance;	//Represents geographical distance
+	private int cost;	//Synonymous with weight
 	private boolean known;
-	public GraphNode path;
+	public GraphNode path;	//Holds the node that is right before this one.
 
 	public GraphNode(String city, String state, double latitude, double longitude, int ID) {
 		this.city = city;

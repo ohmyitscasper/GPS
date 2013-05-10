@@ -3,10 +3,6 @@ import java.util.Scanner;
 /**
  * This class contains the main method of the program. 
  * 
- * Functionality being implemented:
- * 	Displaying the menu to the user
- *  Reading the data in.
- * 
  * @author Vanshil Shah vs2409
  *
  */
@@ -35,6 +31,7 @@ public class Tester {
 		GraphNode currentCity = null;
 		Graph graph = new Graph();
 		String fileName = "mygraph.bin";
+		GraphGUI gui = new GraphGUI();
 		
 		for(;;) {
 			System.out.println(userMenu);
@@ -94,13 +91,6 @@ public class Tester {
 					continue;
 				}
 				IO.printCityInfo(currentCity);
-				
-//				//Currently just prints everything out and makes sure that everyone has a connection
-//				for(GraphNode e:graph.getVertices()) {
-//					System.out.println("City : " + e.getCity() + "\t\t\tState : " + e.getState());
-//				}
-//				graph.checkAllEdgesExist();
-				
 				break;
 			case 'h':
 				/*Find n closest cities closest to current city using GPS distances*/

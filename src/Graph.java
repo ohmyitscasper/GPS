@@ -8,6 +8,7 @@ import java.util.Random;
  * This is my graph class
  * This class will be the class that interfaces with the vertices and edges of the graph. 
  * It will be the workhorse of the program because this is where all of the algorithms will.
+ * 
  * @author Vanshil Shah vs2409
  *
  */
@@ -22,22 +23,40 @@ public class Graph implements Serializable{
 	private int totalNodes = 0;
 	private ArrayList<GraphNode> vertices;
 	
+	/**
+	 * Basic Ctor
+	 */
 	public Graph() {
 		vertices = new ArrayList<GraphNode>();
 	}
+	
+	/**
+	 * Adding a node to the graph
+	 * @param node
+	 */
 	public void addNode(GraphNode node) {
 		vertices.add(node);
 	}
 
-
+	/**
+	 * Updating total nodes
+	 * @param total
+	 */
 	public void updateTotalNodes(int total) {
 		totalNodes += total;
 	}
 	
+	/**
+	 * Get the total nodes
+	 * @return
+	 */
 	public int getTotalNodes() {
 		return totalNodes;
 	}
 	
+	/**
+	 * Delete everything from the graph
+	 */
 	public void deleteAllData() {
 		vertices.clear();
 		totalNodes = 0;
@@ -54,10 +73,19 @@ public class Graph implements Serializable{
 		}
 	}
 
+	/**
+	 * Gets a vertex at index idx
+	 * @param idx
+	 * @return
+	 */
 	public GraphNode getVertex(int idx) {
 		return vertices.get(idx);
 	}
 	
+	/**
+	 * Returns the list of vertices.
+	 * @return
+	 */
 	public ArrayList<GraphNode> getVertices() {
 		return vertices;
 	}
@@ -72,16 +100,6 @@ public class Graph implements Serializable{
 		int weight;
 		Random r = new Random();
 		
-		/*Goes through each of the vertices and adds edges to them. 
-		 * When adding edges the following need to be done:
-		 * 	- Calculate the number of directed connections needed
-		 * 	- Calculate the random cities to connect to
-		 * 	- Calculate the random weight for each edge
-		 * 	- Make sure that the adjacency doesn't already exist
-		 * 	- Update the Adjacency List of the starting vertex
-		 * 	- Update the incoming list of the ending vertex
-		 * 	
-		 */
 		for(GraphNode v:vertices) {
 			numDirCon = r.nextInt(RANGE) + 2;	//Generating a random number between 2-8
 			for(int a = 0; a<numDirCon; a++) {
@@ -153,6 +171,11 @@ public class Graph implements Serializable{
 		
 	}
 	
+	/**
+	 * Searches for the city/cities with the matching name
+	 * @param city
+	 * @return
+	 */
 	public ArrayList<GraphNode> searchCity(String city) {
 		ArrayList<GraphNode> cities = new ArrayList<GraphNode>();
 		for(GraphNode v:vertices) {
@@ -211,12 +234,23 @@ public class Graph implements Serializable{
 		return nClosest;
 	}
 	
+	/**
+	 * Returns a random city
+	 * @return
+	 */
 	public GraphNode setRandomCurrentCity() {
 		Random r = new Random();
 		int rand = r.nextInt(totalNodes);
 		return vertices.get(rand);
 	}
 	
+	/**
+	 * Performs a dijkstra search so that all of the weights get populated 
+	 * and returns a list in which the weight is less than y
+	 * @param currentCity
+	 * @param y
+	 * @return
+	 */
 	public ArrayList<GraphNode> yClosest(GraphNode currentCity, double y) {
 		ArrayList<GraphNode> yClosest = new ArrayList<GraphNode>();
 		

@@ -1,12 +1,11 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 /**
  * This class is mainly used for IO to and from files
- * Functionality so far:
- * 	- Loading a text file into the system
- *	- Also does the creation and loading of the graphs
- *
+ * as well as to and from the graph
+ * I decided to separate the functionality so that I can have an easier time with making the GUI
  * @author Vanshil Shah vs2409
  *
  */
@@ -17,6 +16,11 @@ public class IO implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Write to a serialized file
+	 * @param g	the graph to write
+	 * @param fileName	the name of the file to be opened.
+	 */
 	public static void write(Graph g, String fileName) {
 		try
 		{
@@ -32,6 +36,11 @@ public class IO implements Serializable{
 	     }
 	}
 	
+	/**
+	 * Read from a serialized file.
+	 * @param fileName
+	 * @return
+	 */
 	public static Graph read(String fileName) {
 		try {
 			Graph graph;
@@ -53,6 +62,11 @@ public class IO implements Serializable{
 		return null;
 	}
 
+	/**
+	 * Loading a text file
+	 * @param g
+	 * @return
+	 */
 	public static Graph loadFile(Graph g) {
 		Scanner fileReader, in;
 		File input;
@@ -218,6 +232,11 @@ public class IO implements Serializable{
 		return currentCity;
 	}
 	
+	/**
+	 * Prints the n closest cities
+	 * @param g
+	 * @param currentCity
+	 */
 	public static void nClosest(Graph g, GraphNode currentCity) {
 		
 		int n=0;
@@ -248,6 +267,11 @@ public class IO implements Serializable{
 		}
 	}
 	
+	/**
+	 * Prints the y closest cities by breadth.
+	 * @param g
+	 * @param currentCity
+	 */
 	public static void yClosest(Graph g, GraphNode currentCity) {
 		int y = 0;
 		String input; 
@@ -276,6 +300,12 @@ public class IO implements Serializable{
 			printCityInfo(v);
 	}
 	
+	
+	/**
+	 * Finds the shortest path by calling the dijkstra function in graph
+	 * @param g
+	 * @param currentCity
+	 */
 	public static void shortestPath(Graph g, GraphNode currentCity) {
 		String cityInput;
 		Scanner in = new Scanner(System.in);
@@ -292,6 +322,10 @@ public class IO implements Serializable{
 		printPath(cities.get(0));	//Just print the path to the first city with this name
 	}
 	
+	/**
+	 * A helper function that recursively prints the path
+	 * @param city
+	 */
 	public static void printPath(GraphNode city) {
 		if(city.path!=null) {
 			printPath(city.path);
@@ -300,6 +334,10 @@ public class IO implements Serializable{
 		System.out.println(city.getCity());
 	}
 	
+	/**
+	 * A function that just prints out the information of the cities
+	 * @param v
+	 */
 	public static void printCityInfo(GraphNode v) {
 		System.out.println("City " + v.getCity() + " is in state " + v.getState() + " has ID " + v.getID());
 		System.out.println("Latitude: " + v.getLat() + " Longitude: " + v.getLong());
