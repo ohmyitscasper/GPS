@@ -1,5 +1,10 @@
 import java.io.Serializable;
 
+/**
+ * An edge class
+ * @author Vanshil Shah vs2409
+ *
+ */
 public class Edge implements Serializable{
 
 	/**

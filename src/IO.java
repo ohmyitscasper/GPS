@@ -21,7 +21,8 @@ public class IO implements Serializable{
 	 * @param g	the graph to write
 	 * @param fileName	the name of the file to be opened.
 	 */
-	public static void write(Graph g, String fileName) {
+	public static boolean write(MyGraph g, String fileName) {
+		boolean write = false;
 		try
 		{
 			FileOutputStream fileOut = new FileOutputStream(fileName);
@@ -29,11 +30,13 @@ public class IO implements Serializable{
 	        out.writeObject(g);
 	        out.close();
 	        fileOut.close();
+	        write = true;
 	     }catch(IOException i)
 	     {
 	    	 System.out.println("Write error.");
 	    	 i.printStackTrace();
 	     }
+		return write;
 	}
 	
 	/**
@@ -41,16 +44,12 @@ public class IO implements Serializable{
 	 * @param fileName
 	 * @return
 	 */
-	public static Graph read(String fileName) {
+	public static MyGraph read(String fileName) {
 		try {
-			Graph graph;
+			MyGraph graph;
 			FileInputStream fileIn = new FileInputStream(fileName);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
-			graph = (Graph) in.readObject();
-			System.out.println("Graph g contains " + graph.getTotalNodes() + " total nodes");
-			for(GraphNode v: graph.getVertices()) {
-				System.out.println("City: " + v.getCity());
-			}
+			graph = (MyGraph) in.readObject();
 			in.close();
 			fileIn.close();
 			return graph;
@@ -63,37 +62,29 @@ public class IO implements Serializable{
 	}
 
 	/**
-	 * Loading a text file
+	 * Loads a file into the graph.
 	 * @param g
+	 * @param n
+	 * @param fileName
 	 * @return
 	 */
-	public static Graph loadFile(Graph g) {
-		Scanner fileReader, in;
+	public static MyGraph loadFile(MyGraph g, int o, String fileName) {
+		Scanner fileReader;
 		File input;
 		int totalCities, readInCities =0;
 		String firstLine, cityState, lat, lon, city, state;
 		double latitude, longitude;
 		GraphNode n;
-		in = new Scanner(System.in);
-
-		System.out.println("Would you rather:\na. Load a file and erase all of the data in the graph currently" +
-				"\nb. Load a file and append all of the data in the file to the existing graph" +
-				"\n Please enter either a or b.");
-		String option = in.nextLine();
-
-		//If the user wants to delete everything from the graph, go ahead and do it.
-		if(option.equals("a")) {
+		
+		if(o==0) 
 			g.deleteAllData();
-		}
-		else 
+		else
 			readInCities=g.getTotalNodes();
 
-		System.out.println("Please enter the file name.");
-		input = new File(in.nextLine());
+		input = new File(fileName);
 		
 		//This try catch block exists to prevent against failure from reading in a bad file name
 		try {
-			
 			fileReader = new Scanner(input);
 			firstLine = fileReader.nextLine();
 			totalCities = Integer.parseInt(firstLine);
@@ -125,9 +116,7 @@ public class IO implements Serializable{
 				
 				//Add the node to the graph
 				g.addNode(n);
-			}	
-			System.out.println("Cities Loaded");
-			System.out.println("Adding random edges\n\n");
+			}
 			g.clearEdges();
 			g.addRandomEdges();
 			return g;
@@ -143,55 +132,17 @@ public class IO implements Serializable{
 	 * Does the IO for searching the state
 	 * @param g the graph object to be searched.
 	 */
-	public static void stateSearch(Graph g) {
-		String state;
-		Scanner in = new Scanner(System.in);
-		ArrayList<GraphNode> cities;
-		
-		System.out.println("\nPlease enter the state that you would like to search for.");
-		state = in.nextLine();
-		
-		/*Sanitize the state*/
-		
-		cities = g.searchByState(state);	//Get the arraylist of states from graph
-		
-		//Makes sure that the state actually exists in the arraylist.
-		while(cities.isEmpty()) {
-			System.out.println("\nThe state cannot be found. Please enter another state or simply type m to return to the menu.");
-			state = in.nextLine();
-			if(state.equals("m")) {
-				return;
-			}
-			else
-				cities = g.searchByState(state);
-		}
-		
-		//Print out all of the relevant information
-		for(GraphNode v:cities) {
-			printCityInfo(v);
-		}
+	public static ArrayList<GraphNode> stateSearch(MyGraph g, String state) {
+		return g.searchByState(state);	//Get the arraylist of states from graph
 	}
 	
 	/**
 	 * Does the IO for searching for the city
 	 * @param g the graph to be searched.
+	 * @return 
 	 */
-	public static void citySearch(Graph g) {
-		String cityInput;
-		Scanner in = new Scanner(System.in);
-		ArrayList<GraphNode> cities; 
-		
-		System.out.println("\nPlease enter the city that you would like to search for.");
-		cityInput = in.nextLine();
-		
-		cities = g.searchCity(cityInput);
-		if(cities.size()==0) {
-			System.out.println("\nNo cities found with name " + cityInput + "\n");
-			return;
-		}
-		for(GraphNode v:cities) {
-			printCityInfo(v);
-		}
+	public static ArrayList<GraphNode> citySearch(MyGraph g, String city) {
+		return g.searchCity(city);
 	}
 	
 	/**
@@ -199,105 +150,28 @@ public class IO implements Serializable{
 	 * @param g the graph
 	 * @return the node that contains the current city.
 	 */
-	public static GraphNode setCurrentCity(Graph g) {
-		int ID=0;
-		String input;
-		Scanner in  = new Scanner(System.in);
-		GraphNode currentCity;
-		boolean numb = true;
-		
-		
-		//Makes sure that the user inputs something that makes sense
-		do {
-			System.out.println("\nPlease enter the ID (between 0 and " + g.getTotalNodes() + ") of the city you want to set to the current city." +
-					"\nOr simply type m if you want to return to the menu");
-			input = in.nextLine();
-			if(input.equals("m"))
-				return null;
-			try {
-				ID=Integer.parseInt(input);
-				if(ID<0 || ID>g.getTotalNodes()) {
-					numb = false;
-					continue;
-				}
-				numb = true;
-			}
-			catch (NumberFormatException e) {
-				numb = false;
-			}
-		} while(!numb);
-		
-		currentCity = g.getVertex(ID);
-		
-		return currentCity;
+	public static GraphNode setCurrentCity(MyGraph g, int n) {
+		return g.getVertex(n);
 	}
 	
 	/**
 	 * Prints the n closest cities
 	 * @param g
 	 * @param currentCity
+	 * @return 
 	 */
-	public static void nClosest(Graph g, GraphNode currentCity) {
-		
-		int n=0;
-		String input;
-		Scanner in  = new Scanner(System.in);
-		boolean numb = true;
-
-		//Makes sure that the user inputs something that makes sense
-		do {
-			System.out.println("\nPlease enter a number n to find n closest cities to the current city" +
-					"\nOr simply type m if you want to return to the menu");
-			input = in.nextLine();
-			if(input.equals("m"))
-				return;
-			try {
-				n=Integer.parseInt(input);
-				numb = true;
-			}
-			catch (NumberFormatException e) {
-				numb = false;
-			}
-		} while(!numb);
-		
-		//Calls the method in graph that returns the arraylist of n closest.
-		ArrayList<GraphNode> closest = g.nClosest(currentCity, n);
-		for(GraphNode v:closest) {
-			printCityInfo(v);
-		}
+	public static ArrayList<GraphNode> nClosest(MyGraph g, GraphNode currentCity, int n) {
+		return g.nClosest(currentCity, n);
 	}
 	
 	/**
 	 * Prints the y closest cities by breadth.
 	 * @param g
 	 * @param currentCity
+	 * @return 
 	 */
-	public static void yClosest(Graph g, GraphNode currentCity) {
-		int y = 0;
-		String input; 
-		Scanner in = new Scanner(System.in);
-		boolean numb = true;
-		
-		do {
-			System.out.println("\nPlease enter a weight y to find all cities within weight y of the closest city" +
-					"\nOr simply type m if you want to return to the menu");
-			input = in.nextLine();
-			if(input.equals("m"))
-				return;
-			try {
-				y=Integer.parseInt(input);
-				numb = true;
-			}
-			catch (NumberFormatException e) {
-				numb = false;
-			}
-		} while(!numb);
-		
-		ArrayList<GraphNode> yClosest = g.yClosest(currentCity, y);
-		if(yClosest.isEmpty()) 
-			System.out.println("None within.");
-		for(GraphNode v:yClosest) 
-			printCityInfo(v);
+	public static ArrayList<GraphNode> yClosest(MyGraph g, GraphNode currentCity, int y) {
+		return g.yClosest(currentCity, y);
 	}
 	
 	
@@ -306,32 +180,12 @@ public class IO implements Serializable{
 	 * @param g
 	 * @param currentCity
 	 */
-	public static void shortestPath(Graph g, GraphNode currentCity) {
-		String cityInput;
-		Scanner in = new Scanner(System.in);
-		ArrayList<GraphNode> cities; 
-		
-		System.out.println("\nPlease enter the city that you would like to search for.");
-		cityInput = in.nextLine();
-		cities = g.searchCity(cityInput);
-		if(cities.size()==0) {
-			System.out.println("\nNo cities found with name " + cityInput + "\n");
-			return;
+	public static ArrayList<GraphNode> shortestPath(MyGraph g, GraphNode currentCity, String cityInput) {
+		ArrayList<GraphNode> cities = g.searchCity(cityInput);
+		if(cities.size()!=0) {
+			g.dijkstra(currentCity);
 		}
-		g.dijkstra(currentCity);
-		printPath(cities.get(0));	//Just print the path to the first city with this name
-	}
-	
-	/**
-	 * A helper function that recursively prints the path
-	 * @param city
-	 */
-	public static void printPath(GraphNode city) {
-		if(city.path!=null) {
-			printPath(city.path);
-			System.out.println(" to ");
-		}
-		System.out.println(city.getCity());
+		return cities;
 	}
 	
 	/**
